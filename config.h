@@ -90,7 +90,8 @@ char *termname = "st-256color";
 unsigned int tabspaces = 8;
 
 /* bg opacity */
-float alpha = 0.85;
+float alpha = 0.9;           //< alpha value used when the window is focused.
+float alphaUnfocussed = 0.6; //< alpha value used when the focus is lost
 
 //#include "/home/paradox/.cache/wal/colors-wal-st.h"
 /* Terminal colors (16 first used in escape sequence) */
@@ -117,7 +118,7 @@ static const char *colorname[] = {
 	 [15] = "#eceff4",	//"#5c6370",	"#eceff4",	"#ffffff",	"white",	white
 
 	// special colors 
-	[256] = "#2e3440",	//"#2e3440",	"#2e3440",	"#2e3440",	"#282a36", background
+	[256] = "#181617",	//"#2e3440",	"#2e3440",	"#2e3440",	"#282a36", background
 	[257] = "#d8dee9",	//"#d8dee9",	"#abb2bf",	"#d8dee9",	"#f8f8f2", foreground
 };
 

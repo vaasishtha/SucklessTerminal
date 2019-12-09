@@ -17,6 +17,7 @@ st(Simple Terminal) is a simple terminal emulator for X which sucks less.
 Patches 
 =======
 Alpha,
+Alpha Focus Highlight,
 Anysize,
 Clipboard,
 Copyurl,
