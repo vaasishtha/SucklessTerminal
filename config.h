@@ -90,11 +90,12 @@ char *termname = "st-256color";
 unsigned int tabspaces = 8;
 
 /* bg opacity */
-float alpha = 0.8;
+float alpha = 0.85;
 
+//#include "/home/paradox/.cache/wal/colors-wal-st.h"
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
-	/* 8 normal colors */
+	// 8 normal colors 
 	//   			One Dark[atom]	   Nord		 Dracula	Default
 	 [0] = "#282c34",	//"#282c34",	"#3b4252", 	"#000000",	"black",	black
 	 [1] = "#e06c75",	//"#e06c75",	"#bf616a",	"#ff5555",	"red3", 	red
@@ -103,9 +104,9 @@ static const char *colorname[] = {
 	 [4] = "#61afef",	//"#61afef",	"#81a1c1",	"#bd93f9",	"blue2",	blue
 	 [5] = "#c678dd",	//"#c678dd",	"#b48ead",	"#ff79c6",	"magenta3", 	magenta
 	 [6] = "#56b6c2",	//"#56b6c2",	"#88c0d0",	"#8be9fd",	 "cyan3",	cyan
-	 [7] = "#e5e9f0",	//"#4b5263",	"#e5e9f0",	"#bbbbbb",	 "gray90",	white
+	 [7] = "#4b5263",	//"#4b5263",	"#e5e9f0",	"#bbbbbb",	 "gray90",	white
 
-		/* 8 bright colors */
+	// 8 bright colors 
 	 [8]  = "#282c34",	//"#282c34",	"#4c566a",	"#44475a",	"gray50",	white
 	 [9]  = "#be5046",	//"#be5046",	"#bf616a",	"#ff5555",	"red",		red
 	 [10] = "#98c379",	//"#98c379",	"#a3be8c",	"#50fa7b",	"green",	green
@@ -115,11 +116,10 @@ static const char *colorname[] = {
 	 [14] = "#56b6c2",	//"#56b6c2",	"#8fbcbb",	"#8be9fd",	"cyan",		cyan
 	 [15] = "#eceff4",	//"#5c6370",	"#eceff4",	"#ffffff",	"white",	white
 
-		/* special colors */
-	[256] = "#2e3440",	//"#2e3440",	"#2e3440",	"#282a36", background
-	[257] = "#e5e0f0",	//"#abb2bf",	"#d8dee9",	"#f8f8f2", foreground
+	// special colors 
+	[256] = "#2e3440",	//"#2e3440",	"#2e3440",	"#2e3440",	"#282a36", background
+	[257] = "#d8dee9",	//"#d8dee9",	"#abb2bf",	"#d8dee9",	"#f8f8f2", foreground
 };
-
 
 /*
  * Default colors (colorname index)
@@ -174,12 +174,14 @@ static MouseShortcut mshortcuts[] = {
 
 MouseKey mkeys[] = {
 	/* button               mask            function        argument */
-	{ Button4,              ShiftMask,      kscrollup,      {.i =  1} },
-	{ Button5,              ShiftMask,      kscrolldown,    {.i =  1} },
+	{ Button4,              MODKEY,	      	kscrollup,      {.i =  1} },
+	{ Button5,              MODKEY, 	kscrolldown,    {.i =  1} },
 	{ Button4,		TERMMOD,	zoom,		{.f = +1} },
 	{ Button4,		TERMMOD,	zoom,		{.f = -1} },
 };
 
+static char *openurlcmd[] = { "/bin/sh", "-c","sed 's/.*│//g' | tr -d '\n' | grep -aEo '(((http|https)://|www\\.)[a-zA-Z0-9.]*[:]?[a-zA-Z0-9./&%?=_-]*)|((magnet:\\?xt=urn:btih:)[a-zA-Z0-9]*)'| uniq | sed 's/^www./http:\\/\\/www\\./g' | dmenu -p 'Follow which url?' -l 10 | xargs -r xdg-open", "externalpipe", NULL };
+static char *opentext[] = { "/bin/sh", "-c", "tmp=/tmp/st-temp.XXXXXX", "mktemp $tmp", "trap 'rm $tmp' 0 1 15", "cat > $tmp", "st -e $editor $tmp", NULL };
 
 
 static Shortcut shortcuts[] = {
@@ -191,17 +193,18 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Up,	        zoom,           {.f = +1} },
 	{ TERMMOD,              XK_Down,        zoom,           {.f = -1} },
 	{ TERMMOD,              XK_Home,        zoomreset,      {.f =  0} },
-	{ MODKEY,               XK_C,           clipcopy,       {.i =  0} },
-	{ MODKEY,	        XK_V,           clippaste,      {.i =  0} },
-	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
+	{ MODKEY,               XK_c,           clipcopy,       {.i =  0} },
+	{ MODKEY,	        XK_v,           clippaste,      {.i =  0} },
+	{ TERMMOD,              XK_y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 	{ MODKEY,		XK_Up,		kscrollup,	{.i =  1} },
 	{ MODKEY,		XK_Down,	kscrolldown,	{.i =  1} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-	{ TERMMOD,              XK_I,           iso14755,       {.i =  0} },
-	{ MODKEY,               XK_l,           copyurl,        {.i =  0} },
+	{ TERMMOD,              XK_i,           iso14755,       {.i =  0} },
+	{ MODKEY,               XK_e,           externalpipe,   {.v =  opentext} },
+	{ MODKEY,		XK_l,		externalpipe,	{.v =  openurlcmd} },
 };
 
 /*
