@@ -5,12 +5,12 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Cascadia Code:pixelsize=13:antialias=true:autohint=true";
+static char *font = "FiraCode Nerd Font:style=Retina,Regular:pixelsize=13:antialias=true:autohint=true";
 /* Spare fonts */
 static char *font2[] = {
 	"Cascadia Code:pixelsize=14:antialias=true:autohint=true",
 /*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */	
-/*	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", */
+//	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", 
 };
 
 static int borderpx = 2;
@@ -70,7 +70,7 @@ static unsigned int cursorthickness = 2;
 static int bellvolume = 0;
 
 /* default TERM value */
-char *termname = "st-256color";
+char *termname = "st";
 
 /*
  * spaces per tab
@@ -87,25 +87,25 @@ char *termname = "st-256color";
  *
  *	stty tabs
  */
-unsigned int tabspaces = 8;
+unsigned int tabspaces = 4;
 
 /* bg opacity */
 float alpha = 0.9;           //< alpha value used when the window is focused.
-float alphaUnfocussed = 0.6; //< alpha value used when the focus is lost
+float alphaUnfocussed = 0.7; //< alpha value used when the focus is lost
 
 //#include "/home/paradox/.cache/wal/colors-wal-st.h"
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	// 8 normal colors 
-	//   			One Dark[atom]	   Nord		 Dracula	Default
+	//					One Dark	     Nord		 Dracula	Default
 	 [0] = "#282c34",	//"#282c34",	"#3b4252", 	"#000000",	"black",	black
 	 [1] = "#e06c75",	//"#e06c75",	"#bf616a",	"#ff5555",	"red3", 	red
 	 [2] = "#98c379",	//"#98c379",	"#a3be8c",	"#50fa7b",	"green3",	green
 	 [3] = "#e5c07b",	//"#e5c07b",	"#ebcb8b",	"#f1fa8c",	"yellow3", 	yellow
 	 [4] = "#61afef",	//"#61afef",	"#81a1c1",	"#bd93f9",	"blue2",	blue
-	 [5] = "#c678dd",	//"#c678dd",	"#b48ead",	"#ff79c6",	"magenta3", 	magenta
-	 [6] = "#56b6c2",	//"#56b6c2",	"#88c0d0",	"#8be9fd",	 "cyan3",	cyan
-	 [7] = "#4b5263",	//"#4b5263",	"#e5e9f0",	"#bbbbbb",	 "gray90",	white
+	 [5] = "#c678dd",	//"#c678dd",	"#b48ead",	"#ff79c6",	"magenta3",	magenta
+	 [6] = "#56b6c2",	//"#56b6c2",	"#88c0d0",	"#8be9fd",	"cyan3",	cyan
+	 [7] = "#4b5263",	//"#4b5263",	"#e5e9f0",	"#bbbbbb",	"gray90",	white
 
 	// 8 bright colors 
 	 [8]  = "#282c34",	//"#282c34",	"#4c566a",	"#44475a",	"gray50",	white
@@ -165,8 +165,8 @@ static unsigned int defaultattr = 11;
  */
 static MouseShortcut mshortcuts[] = {
 	/* button               mask            string */
-	{ Button4,              XK_NO_MOD,      "\031" },
-	{ Button5,              XK_NO_MOD,      "\005" },
+	//{ Button4,              XK_NO_MOD,      "\031" },
+	//{ Button5,              XK_NO_MOD,      "\005" },
 };
 
 /* Internal keyboard shortcuts. */
@@ -174,11 +174,11 @@ static MouseShortcut mshortcuts[] = {
 #define TERMMOD (ControlMask|ShiftMask)
 
 MouseKey mkeys[] = {
-	/* button               mask            function        argument */
-	{ Button4,              MODKEY,	      	kscrollup,      {.i =  1} },
-	{ Button5,              MODKEY, 	kscrolldown,    {.i =  1} },
-	{ Button4,		TERMMOD,	zoom,		{.f = +1} },
-	{ Button4,		TERMMOD,	zoom,		{.f = -1} },
+	/* button		mask			function        argument */
+	{ Button4,		XK_NO_MOD,		kscrollup,      {.i =  1} },
+	{ Button5,		XK_NO_MOD,		kscrolldown,    {.i =  1} },
+	{ Button4,		ControlMask,	zoom,			{.f = +1} },
+	{ Button5,		ControlMask,	zoom,			{.f = -1} },
 };
 
 static char *openurlcmd[] = { "/bin/sh", "-c","sed 's/.*│//g' | tr -d '\n' | grep -aEo '(((http|https)://|www\\.)[a-zA-Z0-9.]*[:]?[a-zA-Z0-9./&%?=_-]*)|((magnet:\\?xt=urn:btih:)[a-zA-Z0-9]*)'| uniq | sed 's/^www./http:\\/\\/www\\./g' | dmenu -p 'Follow which url?' -l 10 | xargs -r xdg-open", "externalpipe", NULL };
@@ -195,17 +195,17 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Down,        zoom,           {.f = -1} },
 	{ TERMMOD,              XK_Home,        zoomreset,      {.f =  0} },
 	{ MODKEY,               XK_c,           clipcopy,       {.i =  0} },
-	{ MODKEY,	        XK_v,           clippaste,      {.i =  0} },
+	{ MODKEY,				XK_v,           clippaste,      {.i =  0} },
 	{ TERMMOD,              XK_y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
-	{ MODKEY,		XK_Up,		kscrollup,	{.i =  1} },
-	{ MODKEY,		XK_Down,	kscrolldown,	{.i =  1} },
+	{ MODKEY,				XK_Up,			kscrollup,		{.i =  1} },
+	{ MODKEY,				XK_Down,		kscrolldown,	{.i =  1} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
 	{ TERMMOD,              XK_i,           iso14755,       {.i =  0} },
-	{ MODKEY,               XK_e,           externalpipe,   {.v =  opentext} },
-	{ MODKEY,		XK_l,		externalpipe,	{.v =  openurlcmd} },
+	{ MODKEY,               XK_o,           externalpipe,   {.v =  opentext} },
+	{ MODKEY,				XK_l,			externalpipe,	{.v =  openurlcmd} },
 };
 
 /*
