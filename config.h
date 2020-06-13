@@ -105,7 +105,7 @@ static const char *colorname[] = {
 	 [4] = "#61afef",	//"#61afef",	"#81a1c1",	"#bd93f9",	"blue2",	blue
 	 [5] = "#c678dd",	//"#c678dd",	"#b48ead",	"#ff79c6",	"magenta3",	magenta
 	 [6] = "#56b6c2",	//"#56b6c2",	"#88c0d0",	"#8be9fd",	"cyan3",	cyan
-	 [7] = "#4b5263",	//"#4b5263",	"#e5e9f0",	"#bbbbbb",	"gray90",	white
+	 [7] = "#4b5263",	//"#abb2bf",	"#e5e9f0",	"#bbbbbb",	"gray90",	white
 
 	// 8 bright colors 
 	 [8]  = "#282c34",	//"#282c34",	"#4c566a",	"#44475a",	"gray50",	white
@@ -158,7 +158,7 @@ static unsigned int mousebg = 0;
  * doesn't match the ones requested.
  */
 static unsigned int defaultattr = 11;
-
+ 
 /*
  * Internal mouse shortcuts.
  * Beware that overloading Button1 will disable the selection.
@@ -194,8 +194,8 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Up,	        zoom,           {.f = +1} },
 	{ TERMMOD,              XK_Down,        zoom,           {.f = -1} },
 	{ TERMMOD,              XK_Home,        zoomreset,      {.f =  0} },
-	{ MODKEY,               XK_c,           clipcopy,       {.i =  0} },
-	{ MODKEY,				XK_v,           clippaste,      {.i =  0} },
+	{ ControlMask,          XK_x,           clipcopy,       {.i =  0} },
+	{ ControlMask,			XK_v,           clippaste,      {.i =  0} },
 	{ TERMMOD,              XK_y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
@@ -203,7 +203,6 @@ static Shortcut shortcuts[] = {
 	{ MODKEY,				XK_Down,		kscrolldown,	{.i =  1} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-	{ TERMMOD,              XK_i,           iso14755,       {.i =  0} },
 	{ MODKEY,               XK_o,           externalpipe,   {.v =  opentext} },
 	{ MODKEY,				XK_l,			externalpipe,	{.v =  openurlcmd} },
 };
