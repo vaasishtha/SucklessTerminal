@@ -91,35 +91,35 @@ unsigned int tabspaces = 4;
 
 /* bg opacity */
 float alpha = 0.9;           //< alpha value used when the window is focused.
-float alphaUnfocussed = 0.7; //< alpha value used when the focus is lost
+float alphaUnfocussed = 0.8; //< alpha value used when the focus is lost
 
 //#include "/home/paradox/.cache/wal/colors-wal-st.h"
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	// 8 normal colors 
-	//					One Dark	     Nord		 Dracula	Default
-	 [0] = "#282c34",	//"#282c34",	"#3b4252", 	"#000000",	"black",	black
-	 [1] = "#e06c75",	//"#e06c75",	"#bf616a",	"#ff5555",	"red3", 	red
-	 [2] = "#98c379",	//"#98c379",	"#a3be8c",	"#50fa7b",	"green3",	green
-	 [3] = "#e5c07b",	//"#e5c07b",	"#ebcb8b",	"#f1fa8c",	"yellow3", 	yellow
-	 [4] = "#61afef",	//"#61afef",	"#81a1c1",	"#bd93f9",	"blue2",	blue
-	 [5] = "#c678dd",	//"#c678dd",	"#b48ead",	"#ff79c6",	"magenta3",	magenta
-	 [6] = "#56b6c2",	//"#56b6c2",	"#88c0d0",	"#8be9fd",	"cyan3",	cyan
-	 [7] = "#4b5263",	//"#abb2bf",	"#e5e9f0",	"#bbbbbb",	"gray90",	white
+	//					  GruvBox	One Dark	Nord	Dracula	  Default
+	 [0] = "#282c34",	//"#282828"	"#282c34" "#3b4252" "#000000" "black"	black
+	 [1] = "#e06c75",	//"#cc241d"	"#e06c75" "#bf616a"	"#ff5555" "red3" 	red
+	 [2] = "#a3be8c",	//"#98971a"	"#98c379" "#a3be8c"	"#50fa7b" "green3"	green
+	 [3] = "#e5c07b",	//"#d79921"	"#e5c07b" "#ebcb8b"	"#f1fa8c" "yellow3" yellow
+	 [4] = "#81a1c1",	//"#458488"	"#61afef" "#81a1c1"	"#bd93f9" "blue2"	blue
+	 [5] = "#c678dd",	//"#b16286"	"#c678dd" "#b48ead"	"#ff79c6" "magenta3"magenta
+	 [6] = "#56b6c2",	//"#689d6a"	"#56b6c2" "#88c0d0"	"#8be9fd" "cyan3"	cyan
+	 [7] = "#e5e9f0",	//"#a89984"	"#abb2bf" "#e5e9f0"	"#bbbbbb" "gray90"	white
 
 	// 8 bright colors 
-	 [8]  = "#282c34",	//"#282c34",	"#4c566a",	"#44475a",	"gray50",	white
-	 [9]  = "#be5046",	//"#be5046",	"#bf616a",	"#ff5555",	"red",		red
-	 [10] = "#98c379",	//"#98c379",	"#a3be8c",	"#50fa7b",	"green",	green
-	 [11] = "#d19a66",	//"#d19a66",	"#ebcb8c",	"#f1fa8c",	"yellow",	yellow
-	 [12] = "#61afef",	//"#61afef",	"#81a1c1",	"#bd93f9",	"#5c5cff",	blue
-	 [13] = "#c678dd",	//"#c678dd",	"#b48ead",	"#ff79c6",	"magenta",	magenta
-	 [14] = "#56b6c2",	//"#56b6c2",	"#8fbcbb",	"#8be9fd",	"cyan",		cyan
-	 [15] = "#eceff4",	//"#5c6370",	"#eceff4",	"#ffffff",	"white",	white
+	 [8]  = "#4b5263",	//"#928374"	"#4b5263" "#4c566a"	"#44475a" "gray50"	white
+	 [9]  = "#e06c75",	//"#fb4934"	"#be5046" "#bf616a"	"#ff5555" "red"		red
+	 [10] = "#98c379",	//"#b8bb26"	"#98c379" "#a3be8c"	"#50fa7b" "green"	green
+	 [11] = "#e5c07b",	//"#fabd2f"	"#d19a66" "#ebcb8c"	"#f1fa8c" "yellow"	yellow
+	 [12] = "#61afef",	//"#83a598"	"#61afef" "#81a1c1"	"#bd93f9" "#5c5cff"	blue
+	 [13] = "#c678dd",	//"#d3869b"	"#c678dd" "#b48ead"	"#ff79c6" "magenta"	magenta
+	 [14] = "#56b6c2",	//"#8ec07c"	"#56b6c2" "#8fbcbb"	"#8be9fd" "cyan"	cyan
+	 [15] = "#d8dee9",	//"#ebdbb2"	"#5c6370" "#eceff4"	"#ffffff" "white"	white
 
 	// special colors 
 	[256] = "#181617",	//"#2e3440",	"#2e3440",	"#2e3440",	"#282a36", background
-	[257] = "#d8dee9",	//"#d8dee9",	"#abb2bf",	"#d8dee9",	"#f8f8f2", foreground
+	[257] = "#ffffff",	//"#d8dee9",	"#abb2bf",	"#d8dee9",	"#f8f8f2", foreground
 };
 
 /*
@@ -127,9 +127,9 @@ static const char *colorname[] = {
  * foreground, background, cursor, reverse cursor
  */
 unsigned int defaultfg = 257;
-unsigned int defaultbg = 256;
-static unsigned int defaultcs = 15;
-static unsigned int defaultrcs = 0;
+unsigned int defaultbg = 0;
+static unsigned int defaultcs = 257;
+static unsigned int defaultrcs = 257;
 /*
  * Default shape of cursor
  * 2: Block ("█")
