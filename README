@@ -16,22 +16,7 @@ st(Simple Terminal) is a simple terminal emulator for X which sucks less.
 
 Patches 
 =======
-Alpha,
-Alpha Focus Highlight,
-Anysize,
-Clipboard,
-Copyurl,
-Externalpipe,
-HideCursor,
-Scrollback,
-ScrollbackMouseSupport,
-Spoiler.
-
-Color Schemes Available
-=======================
-Dracula Scheme,
-Nord Scheme,
-One Dark [atom theme]
+See patches Directory.
 
 Installation
 ------------

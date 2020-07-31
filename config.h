@@ -5,26 +5,22 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
+// static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
 static char *font = "FiraCode Nerd Font:style=Retina,Regular:pixelsize=13:antialias=true:autohint=true";
-/* Spare fonts */
-static char *font2[] = {
-	"Cascadia Code:pixelsize=14:antialias=true:autohint=true",
-/*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */	
-//	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", 
-};
-
 static int borderpx = 2;
 
 /*
  * What program is execed by st depends of these precedence rules:
  * 1: program passed with -e
- * 2: utmp option
+ * 2: scroll and/or utmp
  * 3: SHELL environment variable
  * 4: value of shell in /etc/passwd
  * 5: value of shell in config.h
  */
 static char *shell = "/bin/sh";
 char *utmp = NULL;
+/* scroll program: to enable use a string like "scroll" */
+char *scroll = NULL;
 char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 
 /* identification sequence returned in DA and DECID */
@@ -48,15 +44,24 @@ static unsigned int tripleclicktimeout = 600;
 /* alt screens */
 int allowaltscreen = 1;
 
-/* frames per second st should at maximum draw to the screen */
-static unsigned int xfps = 144;
-static unsigned int actionfps = 60;
+/* allow certain non-interactive (insecure) window operations such as:
+   setting the clipboard text */
+int allowwindowops = 0;
+
+/*
+ * draw latency range in ms - from new content/keypress/etc until drawing.
+ * within this range, st draws when content stops arriving (idle). mostly it's
+ * near minlatency, but it waits longer for slow updates to avoid partial draw.
+ * low minlatency will tear/flicker more, as it can "detect" idle too early.
+ */
+static double minlatency = 8;
+static double maxlatency = 33;
 
 /*
  * blinking timeout (set to 0 to disable blinking) for the terminal blinking
  * attribute.
  */
-static unsigned int blinktimeout = 800;
+static unsigned int blinktimeout = 500;
 
 /*
  * thickness of underline and bar cursors
@@ -70,7 +75,7 @@ static unsigned int cursorthickness = 2;
 static int bellvolume = 0;
 
 /* default TERM value */
-char *termname = "st";
+char *termname = "st-256color";
 
 /*
  * spaces per tab
@@ -90,37 +95,38 @@ char *termname = "st";
 unsigned int tabspaces = 4;
 
 /* bg opacity */
-float alpha = 0.9;           //< alpha value used when the window is focused.
-float alphaUnfocussed = 0.8; //< alpha value used when the focus is lost
+float alpha = 0.9, alphaUnfocused = 0.8;
 
-//#include "/home/paradox/.cache/wal/colors-wal-st.h"
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
-	// 8 normal colors 
-	//					  GruvBox	One Dark	Nord	Dracula	  Default
-	 [0] = "#282c34",	//"#282828"	"#282c34" "#3b4252" "#000000" "black"	black
-	 [1] = "#e06c75",	//"#cc241d"	"#e06c75" "#bf616a"	"#ff5555" "red3" 	red
-	 [2] = "#a3be8c",	//"#98971a"	"#98c379" "#a3be8c"	"#50fa7b" "green3"	green
-	 [3] = "#e5c07b",	//"#d79921"	"#e5c07b" "#ebcb8b"	"#f1fa8c" "yellow3" yellow
-	 [4] = "#81a1c1",	//"#458488"	"#61afef" "#81a1c1"	"#bd93f9" "blue2"	blue
-	 [5] = "#c678dd",	//"#b16286"	"#c678dd" "#b48ead"	"#ff79c6" "magenta3"magenta
-	 [6] = "#56b6c2",	//"#689d6a"	"#56b6c2" "#88c0d0"	"#8be9fd" "cyan3"	cyan
-	 [7] = "#e5e9f0",	//"#a89984"	"#abb2bf" "#e5e9f0"	"#bbbbbb" "gray90"	white
+	/* 8 normal colors */
+	"#282c34",
+	"#e06c75",
+	"#a3be8c",
+	"#e5c07b",
+	"#81a1c1",
+	"#c678dd",
+	"#56b6c2",
+	"#e5e9f0",
 
-	// 8 bright colors 
-	 [8]  = "#4b5263",	//"#928374"	"#4b5263" "#4c566a"	"#44475a" "gray50"	white
-	 [9]  = "#e06c75",	//"#fb4934"	"#be5046" "#bf616a"	"#ff5555" "red"		red
-	 [10] = "#98c379",	//"#b8bb26"	"#98c379" "#a3be8c"	"#50fa7b" "green"	green
-	 [11] = "#e5c07b",	//"#fabd2f"	"#d19a66" "#ebcb8c"	"#f1fa8c" "yellow"	yellow
-	 [12] = "#61afef",	//"#83a598"	"#61afef" "#81a1c1"	"#bd93f9" "#5c5cff"	blue
-	 [13] = "#c678dd",	//"#d3869b"	"#c678dd" "#b48ead"	"#ff79c6" "magenta"	magenta
-	 [14] = "#56b6c2",	//"#8ec07c"	"#56b6c2" "#8fbcbb"	"#8be9fd" "cyan"	cyan
-	 [15] = "#d8dee9",	//"#ebdbb2"	"#5c6370" "#eceff4"	"#ffffff" "white"	white
+	/* 8 bright colors */
+	"#4b5263",
+	"#e06c75",
+	"#98c379",
+	"#e5c07b",
+	"#61afef",
+	"#c678dd",
+	"#56b6c2",
+	"#d8dee9",
 
-	// special colors 
-	[256] = "#181617",	//"#2e3440",	"#2e3440",	"#2e3440",	"#282a36", background
-	[257] = "#ffffff",	//"#d8dee9",	"#abb2bf",	"#d8dee9",	"#f8f8f2", foreground
+	[255] = 0,
+
+	/* more colors can be added after 255 to use with DefaultXX */
+	"#181617",
+	"#ffffff",
+	"black",
 };
+
 
 /*
  * Default colors (colorname index)
@@ -130,14 +136,24 @@ unsigned int defaultfg = 257;
 unsigned int defaultbg = 0;
 static unsigned int defaultcs = 257;
 static unsigned int defaultrcs = 257;
+unsigned int bg = 0, bgUnfocused = 0;
+
 /*
- * Default shape of cursor
- * 2: Block ("█")
- * 4: Underline ("_")
- * 6: Bar ("|")
- * 7: Snowman ("☃")
+ * https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h4-Functions-using-CSI-_-ordered-by-the-final-character-lparen-s-rparen:CSI-Ps-SP-q.1D81
+ * Default style of cursor
+ * 0: Blinking block
+ * 1: Blinking block (default)
+ * 2: Steady block ("█")
+ * 3: Blinking underline
+ * 4: Steady underline ("_")
+ * 5: Blinking bar
+ * 6: Steady bar ("|")
+ * 7: Blinking st cursor
+ * 8: Steady st cursor
  */
-static unsigned int cursorshape = 4;
+static unsigned int cursorstyle = 3;
+static Rune stcursor = 0x2603; /* snowman (U+2603) */
+
 
 /*
  * Default columns and rows numbers
@@ -158,32 +174,36 @@ static unsigned int mousebg = 0;
  * doesn't match the ones requested.
  */
 static unsigned int defaultattr = 11;
- 
+
+/*
+ * Force mouse select/shortcuts while mask is active (when MODE_MOUSE is set).
+ * Note that if you want to use ShiftMask with selmasks, set this to an other
+ * modifier, set to 0 to not use it.
+ */
+static uint forcemousemod = ShiftMask;
+
 /*
  * Internal mouse shortcuts.
  * Beware that overloading Button1 will disable the selection.
  */
 static MouseShortcut mshortcuts[] = {
-	/* button               mask            string */
-	//{ Button4,              XK_NO_MOD,      "\031" },
-	//{ Button5,              XK_NO_MOD,      "\005" },
+	/* mask                 button   function        argument       release */
+	{ XK_NO_MOD,            Button4, kscrollup,      {.i = 1} },
+	{ XK_NO_MOD,            Button5, kscrolldown,    {.i = 1} },
+	{ XK_ANY_MOD,           Button3, selpaste,       {.i = 0},      1 },
+	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
+	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
+	{ ShiftMask,            Button5, ttysend,        {.s = "\033[6;2~"} },
+	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
 };
+
+static char *openurlcmd[] = { "/bin/sh", "-c", "sed 's/.*│//g' | tr -d '\n' | grep -aEo '(((http|https)://|www\\.)[a-zA-Z0-9.]*[:]?[a-zA-Z0-9./&%?=_-]*)|((magnet:\\?xt=urn:btih:)[a-zA-Z0-9]*)'| uniq | sed 's/^www./http:\\/\\/www\\./g' | dmenu -p '   ' -l 10 | xargs -r xdg-open", "externalpipe", NULL };
+static char *opentext[] = { "/bin/sh", "-c", "tmp=/tmp/st-temp.XXXXXX", "mktemp $tmp", 
+	"trap 'rm $tmp' 0 1 15", "cat > $tmp", "st -e $EDITOR $tmp", NULL };
 
 /* Internal keyboard shortcuts. */
 #define MODKEY Mod1Mask
 #define TERMMOD (ControlMask|ShiftMask)
-
-MouseKey mkeys[] = {
-	/* button		mask			function        argument */
-	{ Button4,		XK_NO_MOD,		kscrollup,      {.i =  1} },
-	{ Button5,		XK_NO_MOD,		kscrolldown,    {.i =  1} },
-	{ Button4,		ControlMask,	zoom,			{.f = +1} },
-	{ Button5,		ControlMask,	zoom,			{.f = -1} },
-};
-
-static char *openurlcmd[] = { "/bin/sh", "-c","sed 's/.*│//g' | tr -d '\n' | grep -aEo '(((http|https)://|www\\.)[a-zA-Z0-9.]*[:]?[a-zA-Z0-9./&%?=_-]*)|((magnet:\\?xt=urn:btih:)[a-zA-Z0-9]*)'| uniq | sed 's/^www./http:\\/\\/www\\./g' | dmenu -p '   ' -l 10 | xargs -r xdg-open", "externalpipe", NULL };
-static char *opentext[] = { "/bin/sh", "-c", "tmp=/tmp/st-temp.XXXXXX", "mktemp $tmp", "trap 'rm $tmp' 0 1 15", "cat > $tmp", "st -e $EDITOR $tmp", NULL };
-
 
 static Shortcut shortcuts[] = {
 	/* mask                 keysym          function        argument */
@@ -191,20 +211,18 @@ static Shortcut shortcuts[] = {
 	{ ControlMask,          XK_Print,       toggleprinter,  {.i =  0} },
 	{ ShiftMask,            XK_Print,       printscreen,    {.i =  0} },
 	{ XK_ANY_MOD,           XK_Print,       printsel,       {.i =  0} },
-	{ TERMMOD,              XK_Up,	        zoom,           {.f = +1} },
+	{ TERMMOD,              XK_Up,			zoom,           {.f = +1} },
 	{ TERMMOD,              XK_Down,        zoom,           {.f = -1} },
 	{ TERMMOD,              XK_Home,        zoomreset,      {.f =  0} },
 	{ ControlMask,          XK_x,           clipcopy,       {.i =  0} },
-	{ ControlMask,			XK_v,           clippaste,      {.i =  0} },
-	{ TERMMOD,              XK_y,           selpaste,       {.i =  0} },
-	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
-	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
-	{ MODKEY,				XK_Up,			kscrollup,		{.i =  1} },
-	{ MODKEY,				XK_Down,		kscrolldown,	{.i =  1} },
+	{ ControlMask,          XK_v,           clippaste,      {.i =  0} },
+	{ ControlMask,          XK_y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-	{ MODKEY,               XK_o,           externalpipe,   {.v =  opentext} },
-	{ MODKEY,				XK_l,			externalpipe,	{.v =  openurlcmd} },
+	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
+	{ MODKEY,				XK_l,			externalpipe,   {.v = openurlcmd} },
+	{ MODKEY,				XK_o,			externalpipe,   {.v = opentext} },
 };
 
 /*
@@ -239,13 +257,6 @@ static KeySym mappedkeys[] = { -1 };
  * numlock (Mod2Mask) and keyboard layout (XK_SWITCH_MOD) are ignored.
  */
 static uint ignoremod = Mod2Mask|XK_SWITCH_MOD;
-
-/*
- * Override mouse-select while mask is active (when MODE_MOUSE is set).
- * Note that if you want to use ShiftMask with selmasks, set this to an other
- * modifier, set to 0 to not use it.
- */
-static uint forceselmod = ShiftMask;
 
 /*
  * This is the huge key array which defines all compatibility to the Linux
